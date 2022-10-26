@@ -1,6 +1,5 @@
-# Projects
-* # Pong Game with Kivy
-    source: https://kivy.org/doc/stable/tutorials/pong.html
+# Sources
+* https://docs.streamlit.io/library/get-started/main-concepts
 
 
 
