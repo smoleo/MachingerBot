@@ -1,8 +1,8 @@
 from turtle import width
 from PIL import Image
 
-image=Image.open('index.jpg')
-image=image.resize((960,540),Image.NEAREST)
+image=Image.open('index.jpeg')
+image=image.resize((1920,1080),Image.NEAREST)
 width, height = image.size
 pixels=image.load()
 

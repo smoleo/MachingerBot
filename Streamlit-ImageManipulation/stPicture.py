@@ -4,7 +4,7 @@ import numpy as np
 from numpy import median as npmdn
 import time
 from statistics import median as mdn
-
+from numba import njit
 
 st. set_page_config(layout="wide")
 
@@ -106,12 +106,13 @@ def filterMedian(mx, my):
     useNP=False
     if (my*mx)>169:
         useNP=True
+    
     pixels=np.array(st.session_state['img'])
     xradius=int((mx-1)/2)
     yradius=int((my-1)/2)
     print(xradius,yradius)
     width,height=st.session_state['img'].size
-    median=np.zeros(shape=(width,height,len(pixels[0][0])))
+    median=np.zeros(shape=(height,width,len(pixels[0][0])))
     y=0
     x=0
     bar=st.progress(0)
@@ -122,16 +123,7 @@ def filterMedian(mx, my):
             try:
                 pixelsInArea=pixels[int(y-yradius):int(y+yradius+1),int(x-xradius):int(x+xradius+1)]
                 reshaped=pixelsInArea.reshape(my*mx,len(pixels[0][0]))
-                if useNP:
-                    if(len(pixels[0][0])==3):
-                        median[y][x]=([npmdn(reshaped[:,0]),npmdn(reshaped[:,1]),npmdn(reshaped[:,2])])
-                    else:
-                        median[y][x]=([npmdn(reshaped[:,0]),npmdn(reshaped[:,1]),npmdn(reshaped[:,2]),p[3]])
-                else:
-                    if(len(pixels[0][0])==3):
-                        median[y][x]=([mdn(reshaped[:,0]),mdn(reshaped[:,1]),mdn(reshaped[:,2])])
-                    else:
-                        median[y][x]=([mdn(reshaped[:,0]),mdn(reshaped[:,1]),mdn(reshaped[:,2]),p[3]])
+                median[y][x]=calc(reshaped)
             except Exception as e:
                 pass
             x+=1
@@ -142,7 +134,12 @@ def filterMedian(mx, my):
     print('done')
     st.session_state['time']=end-start
     #print(median)
-    return median      
+    return median   
+
+@njit(parallel=True)
+def calc(reshaped):
+    return ([np.median(reshaped[:,0]),np.median(reshaped[:,1]),np.median(reshaped[:,2])])
+       
             
 def initSessionState():
 
